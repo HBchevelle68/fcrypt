@@ -16,7 +16,7 @@ IWhi='\e[0;97m';    BIWhi='\e[1;97m';
 rm *.o 2> /dev/null
 if [ "$?" = "0" ]; then
 	/bin/echo -e ${BIYel}[+] ${RCol}Cleaning workspace
-	/bin/echo -e ${BIGre}[+] ${RCol} done
+	/bin/echo -e ${BIGre}[+] ${RCol}done
 else
 	/bin/echo -e ${BIYel}[+] ${RCol}No files need clean-up 
 fi
