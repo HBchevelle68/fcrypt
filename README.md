@@ -7,4 +7,4 @@ File encryption/decryption tool I am building for fun and because it would be us
 * C++11
 * crypto++ 5.6.5
 * g++ with -std=c++11 -lcryptopp flags
-
+* All encryption files are wrapper libraries I wrote for a another project (https://github.com/HBchevelle68/SafeSpace)
