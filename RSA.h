@@ -16,11 +16,8 @@
 #define Y_THO    4096
 #define PLS_KYS  8192
 
-#define SRSLY_CUT_UR_BALLS_OFF_N_DRINK_SOME_BLEACH_HAIL_SATAN 11776
 
-#define OK_CAN_SOMEONE_TELL_ME_WHY_THIS_IS_ACTUALLY_A_SUPPORTED_KEY_SIZE 15360
-
-namespace SafeSpace {
+namespace FCrypt {
    namespace RSA {
 
       void GenKeyPair(CryptoPP::RSA::PrivateKey& priv, CryptoPP::RSA::PublicKey& pub, const size_t keySize);

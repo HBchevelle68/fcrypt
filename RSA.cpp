@@ -1,6 +1,6 @@
 #include "RSA.h"
 
-namespace SafeSpace {
+namespace FCrypt {
    namespace RSA {
 
       /*

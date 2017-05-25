@@ -1,7 +1,8 @@
 #include "AES.h"
 
 
-namespace SafeSpace {
+namespace FCrypt {
+
    namespace AES {
 
       /*
@@ -11,10 +12,8 @@ namespace SafeSpace {
       @param ksize the size of the key generated
       @param iv the reference of the IV being generated
       @param vsize the size of the IV being generated
-
       */
-      void GenKeyIv(byte* key, size_t ksize,
-         byte* iv, size_t vsize)
+      void GenKeyIv(byte* key, size_t ksize, byte* iv, size_t vsize)
       {
          CryptoPP::AutoSeededRandomPool prng;
          prng.GenerateBlock(key, ksize);
@@ -27,15 +26,14 @@ namespace SafeSpace {
       @param key key being converted to a string
       @param ksize size of the key
       @param out the key in string format
-
       */
-      void KeyToStr(const byte* key, size_t ksize, std::string& out)
-      {
+      
+      void KeyToStr(byte* key, size_t ksize, std::string& out){
          out.clear();
          CryptoPP::StringSource(key, ksize, true,
             new CryptoPP::HexEncoder(new CryptoPP::StringSink(out)));
       }
-
+   
       /*
       @brief Converts the Initialization Vector to a string
 
@@ -43,7 +41,7 @@ namespace SafeSpace {
       @param vsize size of the IV
       @param out the IV in string format
       */
-      void IvToStr(const byte* iv, size_t vsize, std::string& out)
+      void IvToStr(byte* iv, size_t vsize, std::string& out)
       {
          out.clear();
          CryptoPP::StringSource(iv, vsize, true,

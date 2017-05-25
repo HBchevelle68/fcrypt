@@ -15,11 +15,12 @@
 #include <crypto++/files.h>
 
 #define AES128 CryptoPP::AES::DEFAULT_KEYLENGTH //128-bit
-#define AES192 24
-#define AES256 CryptoPP::AES::MAX_KEYLENGTH //256-bit
+#define AES192 24                               //192-bit
+#define AES256 CryptoPP::AES::MAX_KEYLENGTH     //256-bit
 #define IVSIZE CryptoPP::AES::BLOCKSIZE
 
 namespace FCrypt {
+   
    namespace AES {
       void GenKeyIv(byte* key, size_t ksize, byte* iv, size_t vsize);
       void KeyToStr(byte* key, size_t ksize, std::string& out);
