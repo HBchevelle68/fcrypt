@@ -13,8 +13,7 @@ namespace FCrypt {
       @param iv the reference of the IV being generated
       @param vsize the size of the IV being generated
       */
-      void GenKeyIv(byte* key, size_t ksize, byte* iv, size_t vsize)
-      {
+      void GenKeyIv(byte* key, size_t ksize, byte* iv, size_t vsize){
          CryptoPP::AutoSeededRandomPool prng;
          prng.GenerateBlock(key, ksize);
          prng.GenerateBlock(iv, vsize);
@@ -41,8 +40,7 @@ namespace FCrypt {
       @param vsize size of the IV
       @param out the IV in string format
       */
-      void IvToStr(byte* iv, size_t vsize, std::string& out)
-      {
+      void IvToStr(byte* iv, size_t vsize, std::string& out){
          out.clear();
          CryptoPP::StringSource(iv, vsize, true,
             new CryptoPP::HexEncoder(new CryptoPP::StringSink(out)));

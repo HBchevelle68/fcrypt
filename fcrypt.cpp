@@ -2,7 +2,7 @@
 
 #include "AES.h"
 #include "RSA.h"
-
+#include "KeyIO.h"
 
 
 
@@ -35,7 +35,7 @@ int main(int argc, char* argv[]){
 		
 		std::string err("");
    		std::string temp(argv[1]);
-   		std::ofstream outF(temp.append(".crypt"), std::ios::out | std::ios::app);
+   		std::ofstream outF(temp.append(".crypt"));
    	
    		if(!FCrypt::AES::EncryptFile(fte, outF, key, AES128, iv, IVSIZE, err)){
    			std::cout << "Encryption Error: " << err << std::endl;
@@ -51,10 +51,10 @@ int main(int argc, char* argv[]){
    		}
    		//Write Key IV to file
    		//TO-DO, write encrypted version of key
-		std::ofstream outF2(temp, std::ios::app);
-   		outF2 << "\n" << "$" << key << "$" << iv << "$" << std::endl;
-   		outF2.close();	
+		
+		FCrypt::KeyIO::KIVtof(key, AES128, iv, IVSIZE, temp);	
 
+		FCrypt::KeyIO::ExtractKIV(temp);
 		
 
 	}

@@ -25,6 +25,7 @@ fi
 /bin/echo -e ${BIYel}[+] ${RCol}Compiling Fcrypt
 g++ -Wall fcrypt.cpp AES.cpp RSA.cpp KeyIO.cpp -o fcrypt -std=c++11 -lcryptopp  >1
 
+/bin/echo -e ${BIYel}[+] ${RCol}Creating test.txt file
 touch test.txt && echo This is a test > test.txt
  
 /bin/echo -e ${BIGre}[+] ${RCol}done
