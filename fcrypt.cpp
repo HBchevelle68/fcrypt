@@ -1,3 +1,18 @@
+#ifdef _WIN32
+
+      //TO-DO
+      //Add windows libs
+#include <Windows.h>
+
+#endif
+
+#ifdef __linux__
+
+#include <unistd.h>
+#include <sys/types.h>
+
+#endif
+
 #include <cstdio>
 
 #include "AES.h"
@@ -52,10 +67,25 @@ int main(int argc, char* argv[]){
    		//Write Key IV to file
    		//TO-DO, write encrypted version of key
 		
-		FCrypt::KeyIO::KIVtof(key, AES128, iv, IVSIZE, temp);	
+		FCrypt::KeyIO::KIVtof(key, AES128, iv, IVSIZE, temp);	//key iv to file
 
-		FCrypt::KeyIO::ExtractKIV(temp);
-		
+
+		//Decyption	
+		std::string extracted;
+		int nsize = FCrypt::KeyIO::ExtractKIV(temp, extracted); //extract key/iv from encrypted file
+		int klen = std::stoi(extracted.substr(1,2));
+		byte key2[klen];
+		byte iv2[IVSIZE];
+		FCrypt::KeyIO::Strip(extracted, key2, klen, iv2);
+		FCrypt::KeyIO::printBytes(key2, klen);
+		FCrypt::KeyIO::printBytes(iv2, IVSIZE);
+		char fpath[200];
+		getcwd(fpath, 200);
+		strcat(fpath, "/");
+		strcat(fpath, temp.c_str());
+		std::string t = fpath;
+		std::cout << t << std::endl;
+		truncate(fpath, nsize+1);
 
 	}
 	else {

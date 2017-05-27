@@ -1,7 +1,17 @@
 #include "KeyIO.h"
 
+
 namespace FCrypt {
    namespace KeyIO {
+
+      void printBytes(byte * barray, size_t barraySize) {
+         CryptoPP::HexEncoder encoder(new CryptoPP::FileSink(std::cout));
+         CryptoPP::ByteQueue bq;
+         bq.Put(barray, barraySize);
+         bq.CopyTo(encoder);
+         encoder.MessageEnd();
+         std::cout << std::endl;
+      }
 
       //WARNING!!! OUT MUST BE SIZE 48!!!!
       void EncryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* keyToEnc, const size_t ktoEncSize, byte* out){
@@ -10,7 +20,7 @@ namespace FCrypt {
          enc.SetKeyWithIV(key, ksize, iv, vsize);
 
          //move bytes of ACTUAL AES KEY to ByteQueue
-		 CryptoPP::ByteQueue pKey, eKey;
+		   CryptoPP::ByteQueue pKey, eKey;
          pKey.Put(keyToEnc, ktoEncSize);
 
          CryptoPP::StreamTransformationFilter f1(enc, new CryptoPP::Redirector(eKey));
@@ -23,7 +33,7 @@ namespace FCrypt {
 
       void DecryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* toDecrypt, const size_t toDecSize, byte* decrypted){
          //move byte array to decrypt into ByteQueue
-		  CryptoPP::ByteQueue cipher, recover;
+		   CryptoPP::ByteQueue cipher, recover;
          cipher.Put(toDecrypt, toDecSize);
 
          //make decryptor
@@ -37,9 +47,9 @@ namespace FCrypt {
          recover.Get(decrypted, recover.CurrentSize());
       }
 
-      void WriteToFile(std::string& ofName, std::string& kStr, std::string& ivStr){
+      void WriteToFile(std::string& ofName, size_t encSize, std::string& kStr, std::string& ivStr){
          std::ofstream outF(ofName, std::ios::app);
-         outF << "\n" << "$" << kStr << "$" << ivStr << "$" << std::endl;
+         outF << "\n" << "$" << encSize << "$" << kStr << "$" << ivStr << "$" << std::endl;
          outF.close();
       }
 
@@ -48,14 +58,14 @@ namespace FCrypt {
          kStr.clear();
          ivStr.clear();
          CryptoPP::StringSource ss0(key, ksize, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(kStr)));
-         CryptoPP::StringSource ss1(key, ksize, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivStr)));
-         WriteToFile(ofName, kStr, ivStr);
+         CryptoPP::StringSource ss1(iv, vsize, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivStr)));
+         WriteToFile(ofName, ksize, kStr, ivStr);
       }
 
-      void ExtractKIV(std::string& ofName){
+      int ExtractKIV(std::string& ofName, std::string& extracted){
          std::ifstream inF(ofName, std::ios::ate); //open and go to EOF
-         std::string eStr;
          int pos, len = inF.tellg(); 
+         std::string eStr;
          char curChar = '\0';
          for(int i = len-2; i > 0; i--){
             inF.seekg(i);
@@ -64,21 +74,34 @@ namespace FCrypt {
                pos = i;
                break;
             }
-            /*
-            else if(curChar == '$'){
-               tcount++;
-            }
-
-            if(tcount == 3){
-               pos = --i;
-               break;
-            }
-            */
          }
-         std::cout << len << " " << pos << std::endl; 
-         std::getline(inF, eStr);
-         std::cout << eStr << std::endl;
+         std::cout << len << " " << pos << std::endl; //DEBUG
+         std::getline(inF, extracted);
+         std::cout << extracted << std::endl; //DEBUG
          inF.close();
+         return pos;
+      }
+
+      void Strip(std::string& toStrip, byte* key, size_t ksize, byte* iv){
+         size_t pos = 0;
+         short i = 0;
+         std::string KIV[4], token, delim = "$";
+         while ((pos = toStrip.find(delim)) != std::string::npos) {
+             token = toStrip.substr(0, pos);
+             KIV[i++] = token;
+             //std::cout << token << std::endl;
+             toStrip.erase(0, pos + delim.length());
+         }
+         stob(KIV[2], key, ksize);
+         stob(KIV[3], iv, IVSIZE);
+
+      }
+      void stob(std::string& encoded, byte* barray, size_t len){         
+         CryptoPP::HexDecoder decoder;
+         decoder.Put((byte*)encoded.data(), encoded.size());
+         decoder.MessageEnd();
+         decoder.Get(barray, len);
+         //printBytes(barray, len);
       }
 
    }
