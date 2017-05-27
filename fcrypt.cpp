@@ -85,8 +85,23 @@ int main(int argc, char* argv[]){
 		strcat(fpath, temp.c_str());
 		std::string t = fpath;
 		std::cout << t << std::endl;
-		truncate(fpath, nsize+1);
+		truncate(fpath, nsize);
 
+		
+		std::string temp2 = temp.substr(0,temp.find(".crypt"));
+		std::ifstream efile(temp);
+		std::ofstream dfile(temp2);
+		if(!FCrypt::AES::DecryptFile(efile, dfile, key2, AES128, iv2, IVSIZE, err)){
+   			std::cout << "Decryption Error: " << err << std::endl;
+   			dfile.close();
+   			outF.close();
+   			return 1;
+   		} 
+   		else {
+   			efile.close();
+   			dfile.close();
+   			std::remove(temp.c_str());
+   		}
 	}
 	else {
 		std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
