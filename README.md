@@ -9,4 +9,4 @@ File encryption/decryption tool I am building for fun and because it would be us
 * C++11
 * crypto++ 5.6.5
 * g++
-* All encryption files are wrapper functions i wrote using Crypto++
+* All encryption files are wrapper functions I wrote using Crypto++
