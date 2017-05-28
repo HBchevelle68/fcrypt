@@ -67,7 +67,6 @@ namespace FCrypt {
       {
          try {
             CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption e;
-
             e.SetKeyWithIV(key, ksize, iv, vsize);
             CryptoPP::FileSource(inFile, true,
                new CryptoPP::StreamTransformationFilter(e, new CryptoPP::FileSink(outFile)));
