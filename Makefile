@@ -3,7 +3,6 @@ CC = g++
 CFLAGS = -Wall -c -std=c++11
 LFLAGS = -lcryptopp  
 
-
 all: $(OBJS)
 	$(CC) $(OBJS) $(LFLAGS) -o fcrypt
 
