@@ -1,16 +1,12 @@
 #ifdef _WIN32
-
       //TO-DO
       //Add windows libs
 #include <Windows.h>
-
 #endif
 
 #ifdef __linux__
-
 #include <unistd.h>
 #include <sys/types.h>
-
 #endif
 
 #include <cstdio>
@@ -21,7 +17,6 @@
 #include "KeyIO.h"
 
 void usage();
-
 
 int main(int argc, char* argv[]){
 	
