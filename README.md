@@ -1,6 +1,6 @@
 # fcrypt
 
-File encryption/decryption tool I am building for fun and because it would be useful to have. Still under development.
+File encryption/decryption command line tool I am building for fun and because it would be useful to have. Still under development.
 
 #### Current Version: 0.5
 
