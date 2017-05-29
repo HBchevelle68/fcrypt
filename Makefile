@@ -1,6 +1,6 @@
 OBJS = fcrypt.o AES.o RSA.o KeyIO.o 
 CC = g++
-CFLAGS = -Wall -c -std=c++11
+CFLAGS = -c -Wall -std=c++11
 LFLAGS = -lcryptopp  
 
 all: $(OBJS)
