@@ -1,3 +1,6 @@
+/*
+   @Author - Anthony Portante
+*/
 #include "RSA.h"
 
 namespace FCrypt {
