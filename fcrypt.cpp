@@ -11,6 +11,7 @@
 
 #include <cstdio>
 #include <iomanip>
+#include <stdlib.h>
 
 #include "AES.h"
 #include "RSA.h"
@@ -24,6 +25,7 @@ int main(int argc, char* argv[]){
 		usage();
 		return 0;
 	}
+	std::cout << argv[1] << std::endl;
 
 	if(argv[2][0] == '-' && argv[2][1] == 'e'){
 
@@ -33,21 +35,9 @@ int main(int argc, char* argv[]){
 	   		byte key[AES128];
 	  		byte iv[IVSIZE];
 	  		FCrypt::AES::GenKeyIv(key, AES128, iv, IVSIZE);
-
-	  		//	DEBUG
-	  		/*
-	  		std::string k = "";
-	  		std::string v = "";
-	  		FCrypt::AES::KeyToStr(key, AES128, k);
-	  		FCrypt::AES::IvToStr(iv, IVSIZE, v);
-	  		std::cout << "Key: " << k << std::endl; 
-	   		std::cout << "IV: " << v << std::endl;
-	   		*/
-	   		//	END DEBUG
 	   		 
 			std::string err, encF(argv[1]);
 	   		std::ofstream efile(encF.append(".crypt"));
-	   	
 	   		if(!FCrypt::AES::EncryptFile(fte, efile, key, AES128, iv, IVSIZE, err)){
 	   			std::cout << "Encryption Error: " << err << std::endl;
 	   			fte.close();
@@ -80,10 +70,10 @@ int main(int argc, char* argv[]){
 			byte key2[klen], iv2[IVSIZE];
 			FCrypt::KeyIO::Strip(extracted, key2, klen, iv2);
 
-			getcwd(fpath, 200);
-			strcat(fpath, "/");
-			strcat(fpath, inputFile.c_str());
-			truncate(fpath, nsize);
+			#ifdef __linux__
+				realpath(argv[1], fpath);
+				truncate(fpath, nsize);
+			#endif
 
 			std::string origName = inputFile.substr(0,inputFile.find(".crypt"));
 			std::ofstream dfile(origName);
@@ -102,8 +92,6 @@ int main(int argc, char* argv[]){
 		else {
 			std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
 		}
-
-
 	}
 	else{
 		usage();
