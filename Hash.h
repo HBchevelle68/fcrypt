@@ -8,12 +8,11 @@
 
 #include <string>
 #include <random>
-#include <cryptopp565\osrng.h>
-#include <cryptopp565\hex.h>
-#include <cryptopp565\sha.h>
-#include <cryptopp565\sha3.h>
-#include <cryptopp565\files.h>
-#include <cryptopp565\pwdbased.h>
+#include <crypto++/osrng.h>
+#include <crypto++/hex.h>
+#include <crypto++/sha.h>
+#include <crypto++/files.h>
+#include <crypto++/pwdbased.h>
 
 //hash output sizes 
 #define S512      128
@@ -21,11 +20,13 @@
 #define S256      64
 #define SALTSIZE  8
 
-namespace SafeSpace {
+namespace FCrypt {
+
    namespace Hash {
-      void SHA3_512(std::string& pwd, std::string& output, std::string& salt);
-      void SHA3_384(std::string& pwd, std::string& output, std::string& salt);
-      void SHA3_256(std::string& pwd, std::string& output, std::string& salt);
+
+      void SHA_512(std::string& pwd, std::string& output, std::string& salt);
+      void SHA_384(std::string& pwd, std::string& output, std::string& salt);
+      void SHA_256(std::string& pwd, std::string& output, std::string& salt);
       void FileHash(std::fstream& file, std::string& outputHash);
 
       void GenSalt(std::string& pw_salt);

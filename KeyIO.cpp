@@ -87,9 +87,12 @@ namespace FCrypt {
       @param kStr string version of AES key 
       @param ivStr string version of IV
       */
-      void WriteToFile(std::string& ofName, size_t kSize, std::string& kStr, std::string& ivStr){
+      void WriteToFile(std::string& ofName, size_t kSize, std::string& kStr, std::string& ivStr, std::string& pwd){
          std::ofstream outF(ofName, std::ios::app);
-         outF << "\n" << "$" << kSize << "$" << kStr << "$" << ivStr << "$" << std::endl;
+         std::string hash = "", salt = "";
+         FCrypt::Hash::SHA_512(pwd, hash, salt);
+         std::cout << hash << " $ " << salt << std::endl;
+         outF << "\n" << "$" << kSize << "$" << kStr << "$" << ivStr << "$" << hash << "$" << salt << "$" <<std::endl;
          outF.close();
       }
       /*
@@ -103,13 +106,13 @@ namespace FCrypt {
       @param vsize size of iv in bytes
       @param ofName name of file to write to
       */
-      void StoreToFile(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& ofName){
+      void StoreToFile(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& pwd, std::string& ofName){
          std::string kStr, ivStr;
          kStr.clear();
          ivStr.clear();
          CryptoPP::StringSource ss0(key, ksize, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(kStr)));
          CryptoPP::StringSource ss1(iv, vsize, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivStr)));
-         WriteToFile(ofName, ksize, kStr, ivStr);
+         WriteToFile(ofName, ksize, kStr, ivStr, pwd);
       }
       /*
       @brief Extracts the string appended to encrypted file 
@@ -135,7 +138,7 @@ namespace FCrypt {
          }
          //std::cout << len << " " << pos << std::endl; //DEBUG
          std::getline(inF, extracted);
-         //std::cout << extracted << std::endl; //DEBUG
+         std::cout << extracted << std::endl; //DEBUG
          inF.close();
          return pos;
       }
@@ -152,7 +155,7 @@ namespace FCrypt {
       void Strip(std::string& toStrip, byte* key, size_t ksize, byte* iv){
          size_t pos = 0;
          short i = 0;
-         std::string KIV[4], token, delim = "$";
+         std::string KIV[7], token, delim = "$";
          while ((pos = toStrip.find(delim)) != std::string::npos) {
              KIV[i++] = toStrip.substr(0, pos);
              //KIV[i++] = token;

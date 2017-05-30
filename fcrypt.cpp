@@ -35,7 +35,8 @@ int main(int argc, char* argv[]){
 
 			std::ifstream fte(argv[1]);
 			if(fte.is_open()){
-				//Key IV generation
+				
+				std::cout << "Encrypting " << argv[1] << " with AES-128" << std::endl;
 		   		byte key[AES128];
 		  		byte iv[IVSIZE];
 		  		FCrypt::AES::GenKeyIv(key, AES128, iv, IVSIZE);
@@ -55,7 +56,8 @@ int main(int argc, char* argv[]){
 		   		}
 		   		//Write Key IV to file
 		   		//TO-DO, write encrypted version of key	
-				FCrypt::KeyIO::StoreToFile(key, AES128, iv, IVSIZE, encF);
+		   		std::string pwd = argv[4];
+				FCrypt::KeyIO::StoreToFile(key, AES128, iv, IVSIZE, pwd ,encF);
 			}
 			else {
 				std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
