@@ -19,7 +19,7 @@ namespace FCrypt {
      
       void EncryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* keyToEnc, const size_t toEncSize, byte* out);
       void DecryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* toDecrypt, const size_t toDecSize, byte* decrypted);
-      void KIVtof(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& ofName);
+      void StoreToFile(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& ofName);
       int ExtractKIV(std::string& ifName, std::string& extracted);
       void WriteToFile(std::string& ofName, size_t encSize, std::string& kStr, std::string& ivStr);
       void Strip(std::string& toStrip, byte* key, size_t ksize, byte* iv);

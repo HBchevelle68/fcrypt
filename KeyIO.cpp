@@ -101,7 +101,7 @@ namespace FCrypt {
       @param vsize size of iv in bytes
       @param ofName name of file to write to
       */
-      void KIVtof(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& ofName){
+      void StoreToFile(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& ofName){
          std::string kStr, ivStr;
          kStr.clear();
          ivStr.clear();
@@ -152,8 +152,8 @@ namespace FCrypt {
          short i = 0;
          std::string KIV[4], token, delim = "$";
          while ((pos = toStrip.find(delim)) != std::string::npos) {
-             token = toStrip.substr(0, pos);
-             KIV[i++] = token;
+             KIV[i++] = toStrip.substr(0, pos);
+             //KIV[i++] = token;
              //std::cout << token << std::endl;
              toStrip.erase(0, pos + delim.length());
          }

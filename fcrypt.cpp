@@ -21,42 +21,44 @@ void usage();
 
 int main(int argc, char* argv[]){
 	
-	if(argc < 3){
+	if(argc < 5){
 		usage();
 		return 0;
 	}
-	std::cout << argv[1] << std::endl;
 
 	if(argv[2][0] == '-' && argv[2][1] == 'e'){
 
-		std::ifstream fte(argv[1]);
-		if(fte.is_open()){
-			//Key IV generation
-	   		byte key[AES128];
-	  		byte iv[IVSIZE];
-	  		FCrypt::AES::GenKeyIv(key, AES128, iv, IVSIZE);
-	   		 
-			std::string err, encF(argv[1]);
-	   		std::ofstream efile(encF.append(".crypt"));
-	   		if(!FCrypt::AES::EncryptFile(fte, efile, key, AES128, iv, IVSIZE, err)){
-	   			std::cout << "Encryption Error: " << err << std::endl;
-	   			fte.close();
-	   			efile.close();
-	   			return 1;
-	   		} 
-	   		else {
-	   			fte.close();
-	   			efile.close();
-	   			std::cout << argv[1] << std::endl;
-	   			std::remove(argv[1]);
-	   		}
-	   		//Write Key IV to file
-	   		//TO-DO, write encrypted version of key	
-			FCrypt::KeyIO::KIVtof(key, AES128, iv, IVSIZE, encF);
+		if(argv[3][0] == '-' && argv[3][1] == 'p' && argv[4] != NULL){
+
+			std::ifstream fte(argv[1]);
+			if(fte.is_open()){
+				//Key IV generation
+		   		byte key[AES128];
+		  		byte iv[IVSIZE];
+		  		FCrypt::AES::GenKeyIv(key, AES128, iv, IVSIZE);
+		   		 
+				std::string err, encF(argv[1]);
+		   		std::ofstream efile(encF.append(".crypt"));
+		   		if(!FCrypt::AES::EncryptFile(fte, efile, key, AES128, iv, IVSIZE, err)){
+		   			std::cout << "Encryption Error: " << err << std::endl;
+		   			fte.close();
+		   			efile.close();
+		   			return 1;
+		   		} 
+		   		else {
+		   			fte.close();
+		   			efile.close();
+		   			std::remove(argv[1]);
+		   		}
+		   		//Write Key IV to file
+		   		//TO-DO, write encrypted version of key	
+				FCrypt::KeyIO::StoreToFile(key, AES128, iv, IVSIZE, encF);
+			}
+			else {
+				std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
+			}
 		}
-		else {
-			std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
-		}
+		else usage();
 
 	}
 	else if(argv[2][0] == '-' && argv[2][1] == 'd'){ //Decyption	
@@ -102,9 +104,11 @@ int main(int argc, char* argv[]){
 
 void usage()
 {
-  std::cout << "Usage: ./fcrypt [FILE] [ACTION]" << std::endl;
+  std::cout << "Usage: ./fcrypt [FILE] [ACTION] [-p] [PASSWORD]" << std::endl;
 
   std::cout << "\nActions:" << std::endl;
   std::cout << std::setw(10) << std::left << "  -e"  << "Encrypt file using AES" << std::endl;
   std::cout << std::setw(10) << std::left << "  -d"  << "Decrypt file previously encrypted by fcrypt" << std::endl;
+  std::cout << "\nPassword:" << std::endl;
+  std::cout << std::setw(10) << std::left << "  -p"  << "Password for file" << std::endl;
 }
