@@ -17,8 +17,8 @@
 #include <stdlib.h>
 
 #include "AES.h"
-#include "RSA.h"
 #include "KeyIO.h"
+#include "Hash.h"
 
 void usage();
 

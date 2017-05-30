@@ -1,4 +1,4 @@
-OBJS = fcrypt.o AES.o KeyIO.o 
+OBJS = fcrypt.o AES.o Hash.o KeyIO.o 
 CC = g++
 CFLAGS = -c -Wall -std=c++11
 LFLAGS = -lcryptopp  
@@ -6,12 +6,14 @@ LFLAGS = -lcryptopp
 all: $(OBJS)
 	$(CC) $(OBJS) $(LFLAGS) -o fcrypt
 
-fcrypt.o: fcrypt.cpp AES.h KeyIO.h
+fcrypt.o: fcrypt.cpp AES.h Hash.h KeyIO.h
 	$(CC) $(CFLAGS) fcrypt.cpp
 
 AES.o: AES.h AES.cpp 
 	$(CC) $(CFLAGS) AES.cpp 
 
+Hash.o: Hash.h Hash.cpp
+	$(CC) $(CFLAGS) Hash.cpp 
 
 KeyIO.o: KeyIO.h KeyIO.cpp AES.h
 	$(CC) $(CFLAGS) KeyIO.cpp 
