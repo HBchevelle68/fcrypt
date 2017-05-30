@@ -1,3 +1,6 @@
+/*
+   @Author - Anthony Portante
+*/
 #ifdef _WIN32
       //TO-DO
       //Add windows libs
