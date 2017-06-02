@@ -14,6 +14,8 @@
 #include <crypto++/files.h>
 #include <crypto++/pwdbased.h>
 
+#include "KeyIO.h"
+
 //hash output sizes 
 #define S512      128
 #define S384      96
@@ -27,6 +29,7 @@ namespace FCrypt {
       void SHA_512(std::string& pwd, std::string& output, std::string& salt);
       void SHA_384(std::string& pwd, std::string& output, std::string& salt);
       void SHA_256(std::string& pwd, std::string& output, std::string& salt);
+      void PKCS5_PBKDF2(std::string& pwd, std::string& salt, byte* key, size_t ksize, int pos, size_t iter = 1000);
       void FileHash(std::fstream& file, std::string& outputHash);
 
       void GenSalt(std::string& pw_salt);

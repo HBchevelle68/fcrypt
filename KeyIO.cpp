@@ -22,79 +22,7 @@ namespace FCrypt {
          encoder.MessageEnd();
          std::cout << std::endl;
       }
-      /*
-      @brief Encrypts the byte array containing a key
 
-      @param key byte array of key that PERFORMS the encryption
-      @param ksize the size of the key in bytes
-      @param iv byte array containing iv for key  
-      @param vsize the size of the iv in bytes
-      @param keyToEnc the byte array containing the key
-             that will GET ENCRYPTED
-      @param toEncSize the size of keyToEnc
-      @param out byte array containing the encrypted key
-      */
-      //WARNING!!! @param out MUST BE SIZE 48!!!!
-      void EncryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* keyToEnc, const size_t toEncSize, byte* out){
-         //make encryptor
-         CryptoPP::CBC_Mode<CryptoPP::AES>::Encryption enc;
-         enc.SetKeyWithIV(key, ksize, iv, vsize);
-
-         //move bytes of ACTUAL AES KEY to ByteQueue
-		   CryptoPP::ByteQueue pKey, eKey;
-         pKey.Put(keyToEnc, toEncSize);
-
-         CryptoPP::StreamTransformationFilter f1(enc, new CryptoPP::Redirector(eKey));
-         pKey.CopyTo(f1);
-         f1.MessageEnd();
-         //at this point the ENCRYPTED key is in ByteQueue eKey
-
-		 eKey.Get( out, eKey.CurrentSize() );
-      }
-      /*
-      @brief Encrypts the byte array containing a key
-
-      @param key byte array of key that PERFORMS the decryption
-      @param ksize the size of the key in bytes
-      @param iv byte array containing iv for key  
-      @param vsize the size of the iv in bytes
-      @param keyToEnc the byte array containing the key
-             that will GET DECRYPTED
-      @param toEncSize the size of keyToEnc
-      @param out byte array containing the Decrypted key
-      */
-      void DecryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* toDecrypt, const size_t toDecSize, byte* decrypted){
-         //move byte array to decrypt into ByteQueue
-		   CryptoPP::ByteQueue cipher, recover;
-         cipher.Put(toDecrypt, toDecSize);
-
-         //make decryptor
-         CryptoPP::CBC_Mode<CryptoPP::AES>::Decryption dec;
-         dec.SetKeyWithIV(key, ksize, iv, vsize);
-
-         CryptoPP::StreamTransformationFilter f2(dec, new CryptoPP::Redirector(recover));
-         cipher.CopyTo(f2);
-         f2.MessageEnd();
-         //at this point the DECRYPTED key is in ByteQueue recover
-         recover.Get(decrypted, recover.CurrentSize());
-      }
-      /*
-      @brief Writes string to file containing key length,
-             key, and IV.
-
-      @param ofName ref to name of out file
-      @param kSize the size of the key in bytes
-      @param kStr string version of AES key 
-      @param ivStr string version of IV
-      */
-      void WriteToFile(std::string& ofName, size_t kSize, std::string& kStr, std::string& ivStr, std::string& pwd){
-         std::ofstream outF(ofName, std::ios::app);
-         std::string hash = "", salt = "";
-         FCrypt::Hash::SHA_512(pwd, hash, salt);
-         std::cout << hash << " $ " << salt << std::endl;
-         outF << "\n" << "$" << kSize << "$" << kStr << "$" << ivStr << "$" << hash << "$" << salt << "$" <<std::endl;
-         outF.close();
-      }
       /*
       @brief Takes in key and IV in byte form and trasnforms them 
              into strings for writing to a file. Then calls
@@ -106,13 +34,12 @@ namespace FCrypt {
       @param vsize size of iv in bytes
       @param ofName name of file to write to
       */
-      void StoreToFile(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& pwd, std::string& ofName){
-         std::string kStr, ivStr;
-         kStr.clear();
-         ivStr.clear();
-         CryptoPP::StringSource ss0(key, ksize, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(kStr)));
-         CryptoPP::StringSource ss1(iv, vsize, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivStr)));
-         WriteToFile(ofName, ksize, kStr, ivStr, pwd);
+      void StoreToFile(size_t ksize, int pos, byte* iv, std::string& hash, std::string& salt, std::string& ofName){
+         std::string ivStr;
+         CryptoPP::StringSource ss(iv, IVSIZE, true, new CryptoPP::HexEncoder(new CryptoPP::StringSink(ivStr)));
+         std::ofstream outF(ofName, std::ios::app);
+         outF << "\n" << "$" << ksize << "$" << pos << "$" << ivStr << "$" << hash << "$" << salt << "$" <<std::endl;
+         outF.close();
       }
       /*
       @brief Extracts the string appended to encrypted file 
@@ -123,7 +50,7 @@ namespace FCrypt {
 
       @return returns int of size of original file
       */
-      int ExtractKIV(std::string& ifName, std::string& extracted){
+      int Extract(std::string& ifName, std::string& extracted){
          std::ifstream inF(ifName, std::ios::ate); //open and go to EOF
          int pos, len = inF.tellg(); 
          std::string eStr;
@@ -138,7 +65,7 @@ namespace FCrypt {
          }
          //std::cout << len << " " << pos << std::endl; //DEBUG
          std::getline(inF, extracted);
-         std::cout << extracted << std::endl; //DEBUG
+         //std::cout << extracted << std::endl; //DEBUG
          inF.close();
          return pos;
       }
@@ -152,18 +79,28 @@ namespace FCrypt {
       @param iv byte array to hold IV after conversion
       @return returns int of size of original file
       */
-      void Strip(std::string& toStrip, byte* key, size_t ksize, byte* iv){
-         size_t pos = 0;
+      bool Strip(std::string& toStrip, std::string& pwd, byte* key, size_t ksize, byte* iv, std::string& err){
+         size_t index = 0;
          short i = 0;
-         std::string KIV[7], token, delim = "$";
-         while ((pos = toStrip.find(delim)) != std::string::npos) {
-             KIV[i++] = toStrip.substr(0, pos);
-             //KIV[i++] = token;
+         std::string stripped[7], token, delim = "$";
+         while ((index = toStrip.find(delim)) != std::string::npos) {
+             stripped[i++] = toStrip.substr(0, index);
+             //stripped[i++] = token;
              //std::cout << token << std::endl;
-             toStrip.erase(0, pos + delim.length());
+             toStrip.erase(0, index + delim.length());
          }
-         stob(KIV[2], key, ksize);
-         stob(KIV[3], iv, IVSIZE);
+         std::string temp;
+         FCrypt::Hash::SHA_512(pwd, temp, stripped[5]);
+         if(temp.compare(stripped[4])){
+            err = "Pasword Mismatch\n";
+            return false;
+         }
+         //Convert IV from String to byte
+         stob(stripped[3], iv, IVSIZE);
+         int pos = stoi(stripped[2]);
+         //Regenerate key
+         FCrypt::AES::UserGen(pwd, stripped[5], stripped[4], key, ksize, iv, pos);
+         return true;
       }
       /*
       @brief transforms strings to byte arrays
@@ -177,7 +114,6 @@ namespace FCrypt {
          decoder.Put((byte*)encoded.data(), encoded.size());
          decoder.MessageEnd();
          decoder.Get(barray, bsize);
-         //printBytes(barray, len);
       }
 
    }

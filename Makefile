@@ -9,10 +9,10 @@ all: $(OBJS)
 fcrypt.o: fcrypt.cpp AES.h Hash.h KeyIO.h
 	$(CC) $(CFLAGS) fcrypt.cpp
 
-AES.o: AES.h AES.cpp 
+AES.o: AES.h AES.cpp Hash.h
 	$(CC) $(CFLAGS) AES.cpp 
 
-Hash.o: Hash.h Hash.cpp
+Hash.o: Hash.h Hash.cpp KeyIO.h
 	$(CC) $(CFLAGS) Hash.cpp 
 
 KeyIO.o: KeyIO.h KeyIO.cpp AES.h Hash.h

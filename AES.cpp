@@ -3,6 +3,7 @@
 */
 #include "AES.h"
 
+
 namespace FCrypt {
 
    namespace AES {
@@ -19,6 +20,30 @@ namespace FCrypt {
          CryptoPP::AutoSeededRandomPool prng;
          prng.GenerateBlock(key, ksize);
          prng.GenerateBlock(iv, vsize);
+      }
+
+      void UserGen(std::string& pwd, std::string& salt, std::string& hash, byte* key, size_t ksize, byte* iv, int& pos){  
+         //Gen hash & salt if not provided
+         if (salt.empty()) {
+            FCrypt::Hash::SHA_512(pwd, hash, salt);
+         }
+         // Generate random position if non provided
+         // Get random key
+         if(pos == 0) {
+            pos = genRand(0,(999-ksize));
+            // Generate IV
+            CryptoPP::AutoSeededRandomPool prng;
+            prng.GenerateBlock(iv, IVSIZE);
+         }
+         FCrypt::Hash::PKCS5_PBKDF2(pwd, salt, key, ksize, pos, 1000); 
+      }
+
+
+      int genRand(int lower, int upper){
+         std::random_device rand; // obtain a random number from hardware
+         std::mt19937 gen(rand()); // seed the generator
+         std::uniform_int_distribution<> distr(lower, upper);
+         return distr(gen);
       }
 
       /*

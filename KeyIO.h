@@ -18,16 +18,13 @@
 
 
 namespace FCrypt {
+
    namespace KeyIO {
      
-      void EncryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* keyToEnc, const size_t toEncSize, byte* out);
-      void DecryptKey(const byte* key, const size_t ksize, const byte* iv, const size_t vsize, byte* toDecrypt, const size_t toDecSize, byte* decrypted);
+      void StoreToFile(size_t ksize, int pos, byte* iv, std::string& hash, std::string& salt, std::string& ofName);
 
-      void StoreToFile(byte* key, size_t ksize, byte* iv, size_t vsize, std::string& pwd, std::string& ofName);
-
-      int ExtractKIV(std::string& ifName, std::string& extracted);
-      void WriteToFile(std::string& ofName, size_t encSize, std::string& kStr, std::string& ivStr, std::string& pwd);
-      void Strip(std::string& toStrip, byte* key, size_t ksize, byte* iv);
+      int Extract(std::string& ifName, std::string& extracted);
+      bool Strip(std::string& toStrip, std::string& pwd, byte* key, size_t ksize, byte* iv, std::string& err);
       void stob(std::string& encoded, byte* barray, size_t bsize);
       void printBytes(byte * barray, size_t barraySize);
       inline void Move(CryptoPP::BufferedTransformation& bt, byte* out, size_t size) { bt.Get(out, size); }     

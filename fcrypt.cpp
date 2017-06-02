@@ -39,11 +39,14 @@ int main(int argc, char* argv[]){
 				std::cout << "Encrypting " << argv[1] << " with AES-128" << std::endl;
 		   		byte key[AES128];
 		  		byte iv[IVSIZE];
-		  		FCrypt::AES::GenKeyIv(key, AES128, iv, IVSIZE);
-		   		 
+		  		int pos = 0;
+		  		std::string salt, hash, pwd = argv[4];
+		  		
+		  		// gen key, iv, hash, salt, position
+		  		FCrypt::AES::UserGen(pwd, salt, hash, key, sizeof(key), iv, pos);
 				std::string err, encF(argv[1]);
 		   		std::ofstream efile(encF.append(".crypt"));
-		   		if(!FCrypt::AES::EncryptFile(fte, efile, key, AES128, iv, IVSIZE, err)){
+		   		if(!FCrypt::AES::EncryptFile(fte, efile, key, sizeof(key), iv, IVSIZE, err)){
 		   			std::cout << "Encryption Error: " << err << std::endl;
 		   			fte.close();
 		   			efile.close();
@@ -55,9 +58,7 @@ int main(int argc, char* argv[]){
 		   			std::remove(argv[1]);
 		   		}
 		   		//Write Key IV to file
-		   		//TO-DO, write encrypted version of key	
-		   		std::string pwd = argv[4];
-				FCrypt::KeyIO::StoreToFile(key, AES128, iv, IVSIZE, pwd ,encF);
+				FCrypt::KeyIO::StoreToFile(sizeof(key), pos, iv, hash, salt, encF);	
 			}
 			else {
 				std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
@@ -67,38 +68,48 @@ int main(int argc, char* argv[]){
 
 	}
 	else if(argv[2][0] == '-' && argv[2][1] == 'd'){ //Decyption	
-		std::ifstream efile(argv[1]);
-		if(efile){
-			char fpath[200];
-			std::string err, extracted, inputFile(argv[1]);
 
-			int nsize = FCrypt::KeyIO::ExtractKIV(inputFile, extracted);
-			int klen = std::stoi(extracted.substr(1,2));
-			byte key2[klen], iv2[IVSIZE];
-			FCrypt::KeyIO::Strip(extracted, key2, klen, iv2);
+		if(argv[3][0] == '-' && argv[3][1] == 'p' && argv[4] != NULL){
 
-			#ifdef __linux__
-				realpath(argv[1], fpath);
-				truncate(fpath, nsize);
-			#endif
+			std::ifstream efile(argv[1]);
+			if(efile){
+				std::cout << "Decrypting " << argv[1] << std::endl;
+				char fpath[200];
+				std::string err, extracted, pwd = argv[4], inputFile = argv[1];
 
-			std::string origName = inputFile.substr(0,inputFile.find(".crypt"));
-			std::ofstream dfile(origName);
-			if(!FCrypt::AES::DecryptFile(efile, dfile, key2, AES128, iv2, IVSIZE, err)){
-	   			std::cout << "Decryption Error: " << err << std::endl;
-	   			dfile.close();
-	   			efile.close();
-	   			return 1;
-	   		} 
-	   		else {
-	   			efile.close();
-	   			dfile.close();
-	   			std::remove(argv[1]);
-	   		}			
+				int nsize = FCrypt::KeyIO::Extract(inputFile, extracted);
+				int klen = std::stoi(extracted.substr(1,2));
+				byte key2[klen], iv2[IVSIZE];
+				if(!FCrypt::KeyIO::Strip(extracted, pwd, key2, sizeof(key2), iv2, err)){
+					std::cout << err << std::endl;
+					return 1;
+				}
+
+				#ifdef __linux__
+					realpath(argv[1], fpath);
+					truncate(fpath, nsize);
+				#endif
+
+				std::string origName = inputFile.substr(0,inputFile.find(".crypt"));
+				std::ofstream dfile(origName);
+				if(!FCrypt::AES::DecryptFile(efile, dfile, key2, AES128, iv2, IVSIZE, err)){
+		   			std::cout << "Decryption Error: " << err << std::endl;
+		   			dfile.close();
+		   			efile.close();
+		   			return 1;
+		   		} 
+		   		else {
+		   			efile.close();
+		   			dfile.close();
+		   			std::remove(argv[1]);
+		   		}			
+			}
+			else {
+				std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
+			}
 		}
-		else {
-			std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
-		}
+		else usage();	
+
 	}
 	else{
 		usage();
@@ -107,13 +118,11 @@ int main(int argc, char* argv[]){
 	return 0;
 }
 
-void usage()
-{
-  std::cout << "Usage: ./fcrypt [FILE] [ACTION] [-p] [PASSWORD]" << std::endl;
-
-  std::cout << "\nActions:" << std::endl;
-  std::cout << std::setw(10) << std::left << "  -e"  << "Encrypt file using AES" << std::endl;
-  std::cout << std::setw(10) << std::left << "  -d"  << "Decrypt file previously encrypted by fcrypt" << std::endl;
-  std::cout << "\nPassword:" << std::endl;
-  std::cout << std::setw(10) << std::left << "  -p"  << "Password for file" << std::endl;
+void usage() {
+	std::cout << "Usage: ./fcrypt [FILE] [ACTION] [-p] [PASSWORD]" << std::endl;
+	std::cout << "\nActions:" << std::endl;
+	std::cout << std::setw(10) << std::left << "  -e"  << "Encrypt file using AES" << std::endl;
+	std::cout << std::setw(10) << std::left << "  -d"  << "Decrypt file previously encrypted by fcrypt" << std::endl;
+	std::cout << "\nPassword:" << std::endl;
+	std::cout << std::setw(10) << std::left << "  -p"  << "Password for file" << std::endl;
 }

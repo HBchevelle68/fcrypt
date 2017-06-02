@@ -10,27 +10,24 @@ namespace FCrypt {
    namespace Hash {
       
       /* Password Based Key Derivation Function
-      @brief PBKDF function provides a hash over many iterations that "sstretches" the "key" or password
+      @brief PBKDF2 function provides a hash over many iterations 
+             that "stretches" the "key" or password. Algorithm won
+             RSA/IETF competition for PBKDF to replace old PBKDF.
 
       @param pwd a reference to the entered password
       @param salt refernce to users salt value
       @param result, output string of "stretched" key
       @param iter number of iterations function should perform, default 1000
       */
-      void PKCS5_PBKDF2(std::string& pwd, std::string& salt, std::string& result, size_t iter = 1000) {
+      void PKCS5_PBKDF2(std::string& pwd, std::string& salt, byte* key, size_t ksize, int pos, size_t iter) {
 
-         byte derived[128]; //Stretch "key" (pwd) to this size
+         byte derived[1000]; //Stretch "key" (pwd) to this size
 
          CryptoPP::PKCS5_PBKDF2_HMAC<CryptoPP::SHA512> pbkdf2;
          pbkdf2.DeriveKey(derived, sizeof(derived), 0, (unsigned char*)pwd.c_str(),
             pwd.length(), (unsigned char*)salt.c_str(), SALTSIZE, iter);
 
-         //Transforms from byte to string
-         CryptoPP::HexEncoder encoder(new CryptoPP::StringSink(result));
-         encoder.Put(derived, sizeof(derived));
-         encoder.MessageEnd();
-         //At this point a string version of the hash is in result
-         //and a byte array of hash is in derived
+         memcpy(key, &derived[pos], ksize);
       }
 
       /* SHA-512 HASH
@@ -42,8 +39,7 @@ namespace FCrypt {
       @param output return variable with sha3-512 hash
       @param salt refernce to users salt value
       */
-      void SHA_512(std::string& pwd, std::string& output, std::string& salt)
-      {
+      void SHA_512(std::string& pwd, std::string& output, std::string& salt){
          if (salt.empty()) {
             GenSalt(salt);
             pwd.append(salt);
@@ -64,8 +60,7 @@ namespace FCrypt {
       @param output return variable with sha3-384 hash
       @param salt refernce to users salt value
       */
-      void SHA_384(std::string& pwd, std::string& output, std::string& salt)
-      {
+      void SHA_384(std::string& pwd, std::string& output, std::string& salt){
          if (salt.empty()) {
             GenSalt(salt);
             pwd.append(salt);
@@ -86,8 +81,7 @@ namespace FCrypt {
       @param output return variable with sha3-256 hash
       @param salt refernce to users salt value
       */
-      void SHA_256(std::string& pwd, std::string& output, std::string& salt)
-      {
+      void SHA_256(std::string& pwd, std::string& output, std::string& salt){
          if (salt.empty()) {
             GenSalt(salt);
             pwd.append(salt);
@@ -101,8 +95,7 @@ namespace FCrypt {
                new CryptoPP::HexEncoder(new CryptoPP::StringSink(output))));
       }
 
-      void FileHash(std::fstream & file, std::string & outputHash)
-      {
+      void FileHash(std::fstream & file, std::string & outputHash){
          CryptoPP::SHA256 sha_256;
          CryptoPP::FileSource(file, true, 
             new CryptoPP::HashFilter(sha_256, 
@@ -131,8 +124,7 @@ namespace FCrypt {
       @param pw_salt a reference to the salt(string). After generation it is converted
       from hex to string
       */
-      void GenSalt(std::string& pw_salt)
-      {
+      void GenSalt(std::string& pw_salt){
          CryptoPP::AutoSeededRandomPool prng;
          byte temp[SALTSIZE];
          prng.GenerateBlock(temp, SALTSIZE);
