@@ -2,7 +2,7 @@
 
 File encryption/decryption command line tool I am building for fun and because it would be useful to have. Still under development.
 
-#### Current Version: 0.5
+#### Current Version: 0.8
 
 ## Environment and Dependancies
 * Ubuntu 16.04.02
