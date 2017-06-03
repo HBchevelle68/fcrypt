@@ -35,10 +35,22 @@ int main(int argc, char* argv[]){
 
 			std::ifstream fte(argv[1]);
 			if(fte.is_open()){
-				
-				std::cout << "Encrypting " << argv[1] << " with AES-128" << std::endl;
-		   		byte key[AES128];
-		  		byte iv[IVSIZE];
+				size_t size; 
+				if(argv[2][2] == '1'){
+					std::cout << "Encrypting " << argv[1] << " with AES-128" << std::endl;
+		   			size = AES128;
+				}else if(argv[2][2] == '2'){
+
+
+				}else if(argv[2][2] == '3'){
+
+				}else{
+					fte.close();
+					usage();
+					return 0;
+				}
+				byte key[(const size_t)size];
+				byte iv[IVSIZE];
 		  		int pos = 0;
 		  		std::string salt, hash, pwd = argv[4];
 		  		
@@ -79,9 +91,10 @@ int main(int argc, char* argv[]){
 
 				int nsize = FCrypt::KeyIO::Extract(inputFile, extracted);
 				int klen = std::stoi(extracted.substr(1,2));
-				byte key2[klen], iv2[IVSIZE];
-				if(!FCrypt::KeyIO::Strip(extracted, pwd, key2, sizeof(key2), iv2, err)){
+				byte key[klen], iv2[IVSIZE];
+				if(!FCrypt::KeyIO::Strip(extracted, pwd, key, sizeof(key), iv2, err)){
 					std::cout << err << std::endl;
+					efile.close();
 					return 1;
 				}
 
@@ -92,10 +105,10 @@ int main(int argc, char* argv[]){
 
 				std::string origName = inputFile.substr(0,inputFile.find(".crypt"));
 				std::ofstream dfile(origName);
-				if(!FCrypt::AES::DecryptFile(efile, dfile, key2, AES128, iv2, IVSIZE, err)){
+				if(!FCrypt::AES::DecryptFile(efile, dfile, key, sizeof(key), iv2, IVSIZE, err)){
 		   			std::cout << "Decryption Error: " << err << std::endl;
-		   			dfile.close();
 		   			efile.close();
+		   			dfile.close();
 		   			return 1;
 		   		} 
 		   		else {
@@ -109,7 +122,6 @@ int main(int argc, char* argv[]){
 			}
 		}
 		else usage();	
-
 	}
 	else{
 		usage();
