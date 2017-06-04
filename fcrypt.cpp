@@ -131,10 +131,14 @@ int main(int argc, char* argv[]){
 }
 
 void usage() {
-	std::cout << "Usage: ./fcrypt [FILE] [ACTION] [-p] [PASSWORD]" << std::endl;
-	std::cout << "\nActions:" << std::endl;
+	std::cout << "Usage: ./fcrypt [FILE] [ACTION][LEVEL] [-p] [PASSWORD]" << std::endl;
+	std::cout << "\nAction:" << std::endl;
 	std::cout << std::setw(10) << std::left << "  -e"  << "Encrypt file using AES" << std::endl;
 	std::cout << std::setw(10) << std::left << "  -d"  << "Decrypt file previously encrypted by fcrypt" << std::endl;
+	std::cout << "\nLevel (FOR ENCRYPTION ACTION ONLY):" << std::endl;
+	std::cout << std::setw(10) << std::left << "   1"  << "AES-128" << std::endl;
+	std::cout << std::setw(10) << std::left << "   2"  << "AES-192" << std::endl;
+	std::cout << std::setw(10) << std::left << "   3"  << "AES-256" << std::endl;
 	std::cout << "\nPassword:" << std::endl;
 	std::cout << std::setw(10) << std::left << "  -p"  << "Password for file" << std::endl;
 }
