@@ -59,7 +59,7 @@ int main(int argc, char* argv[]){
 				memset(iv,0,sizeof(iv));
 		  		// gen key, iv, hash, salt, position
 		  		FCrypt::AES::UserGen(pwd, salt, hash, key, sizeof(key), iv, pos);
-				std::string err, encF(argv[1]);
+				std::string err, old(argv[1]), encF(argv[1]);
 		   		std::ofstream efile(encF.append(".crypt"));
 		   		if(!FCrypt::AES::EncryptFile(fte, efile, key, sizeof(key), iv, IVSIZE, err)){
 		   			std::cout << "Encryption Error: " << err << std::endl;

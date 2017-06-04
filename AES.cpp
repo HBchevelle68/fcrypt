@@ -72,17 +72,6 @@ namespace FCrypt {
          CryptoPP::StringSource(iv, vsize, true,
             new CryptoPP::HexEncoder(new CryptoPP::StringSink(out)));
       }
-      /*
-      @brief Overwite old contents of file
-
-      @param oldFile the file to overwrite
-      */
-      void FileOverwrite(std::ofstream& oldFile){
-         //int fsize = oldFile.tellg(); 
-         //for(int i = 0; i<fsize; i++){
-         //   key[j] = (unsigned char)FCrypt::AES::GenRand(0,127);
-         //}
-      }
 
       /*
       @brief encrypts files using AES

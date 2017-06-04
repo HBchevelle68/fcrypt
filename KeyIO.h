@@ -26,7 +26,6 @@ namespace FCrypt {
       bool Strip(std::string& toStrip, std::string& pwd, byte* key, size_t ksize, byte* iv, std::string& err);
       void stob(std::string& encoded, byte* barray, size_t bsize);
       void KeyOverwrite(byte* key, size_t size);
-
       void printBytes(byte * barray, size_t barraySize);//DEBUG    
    }
 }

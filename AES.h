@@ -32,7 +32,6 @@ namespace FCrypt {
       void UserGen(std::string& pwd, std::string& salt, std::string& hash, byte* key, size_t ksize, byte* iv, int& pos);
       void KeyToStr(byte* key, size_t ksize, std::string& out);
       void IvToStr(byte* iv, size_t vsize, std::string& out);
-      void FileOverwrite(std::ofstream& oldFile);
       int GenRand(int lower, int upper);
 
       bool EncryptFile(std::ifstream& inFile,
