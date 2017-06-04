@@ -40,10 +40,12 @@ int main(int argc, char* argv[]){
 					std::cout << "Encrypting " << argv[1] << " with AES-128" << std::endl;
 		   			size = AES128;
 				}else if(argv[2][2] == '2'){
-
+					std::cout << "Encrypting " << argv[1] << " with AES-192" << std::endl;
+		   			size = AES192;
 
 				}else if(argv[2][2] == '3'){
-
+					std::cout << "Encrypting " << argv[1] << " with AES-256" << std::endl;
+		   			size = AES256;
 				}else{
 					fte.close();
 					usage();
@@ -53,7 +55,8 @@ int main(int argc, char* argv[]){
 				byte iv[IVSIZE];
 		  		int pos = 0;
 		  		std::string salt, hash, pwd = argv[4];
-		  		
+		  		memset(key,0,sizeof(key));
+				memset(iv,0,sizeof(iv));
 		  		// gen key, iv, hash, salt, position
 		  		FCrypt::AES::UserGen(pwd, salt, hash, key, sizeof(key), iv, pos);
 				std::string err, encF(argv[1]);
@@ -65,19 +68,17 @@ int main(int argc, char* argv[]){
 		   			return 1;
 		   		} 
 		   		else {
-		   			fte.close();
-		   			efile.close();
 		   			std::remove(argv[1]);
 		   		}
 		   		//Write Key IV to file
-				FCrypt::KeyIO::StoreToFile(sizeof(key), pos, iv, hash, salt, encF);	
+				FCrypt::KeyIO::StoreToFile(sizeof(key), pos, iv, hash, salt, encF);
+				FCrypt::KeyIO::KeyOverwrite(key, sizeof(key));
 			}
 			else {
 				std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;
 			}
 		}
 		else usage();
-
 	}
 	else if(argv[2][0] == '-' && argv[2][1] == 'd'){ //Decyption	
 
@@ -112,10 +113,9 @@ int main(int argc, char* argv[]){
 		   			return 1;
 		   		} 
 		   		else {
-		   			efile.close();
-		   			dfile.close();
 		   			std::remove(argv[1]);
-		   		}			
+		   		}
+		   		FCrypt::KeyIO::KeyOverwrite(key, sizeof(key));			
 			}
 			else {
 				std::cout << "Error: no file " << argv[1] << " found\n" << std::endl;

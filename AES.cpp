@@ -30,7 +30,7 @@ namespace FCrypt {
          // Generate random position if non provided
          // Get random key
          if(pos == 0) {
-            pos = genRand(0,(999-ksize));
+            pos = GenRand(0,(999-ksize));
             // Generate IV
             CryptoPP::AutoSeededRandomPool prng;
             prng.GenerateBlock(iv, IVSIZE);
@@ -39,7 +39,7 @@ namespace FCrypt {
       }
 
 
-      int genRand(int lower, int upper){
+      int GenRand(int lower, int upper){
          std::random_device rand; // obtain a random number from hardware
          std::mt19937 gen(rand()); // seed the generator
          std::uniform_int_distribution<> distr(lower, upper);
@@ -71,6 +71,17 @@ namespace FCrypt {
          out.clear();
          CryptoPP::StringSource(iv, vsize, true,
             new CryptoPP::HexEncoder(new CryptoPP::StringSink(out)));
+      }
+      /*
+      @brief Overwite old contents of file
+
+      @param oldFile the file to overwrite
+      */
+      void FileOverwrite(std::ofstream& oldFile){
+         //int fsize = oldFile.tellg(); 
+         //for(int i = 0; i<fsize; i++){
+         //   key[j] = (unsigned char)FCrypt::AES::GenRand(0,127);
+         //}
       }
 
       /*

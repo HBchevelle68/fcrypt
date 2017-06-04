@@ -63,9 +63,7 @@ namespace FCrypt {
                break;
             }
          }
-         //std::cout << len << " " << pos << std::endl; //DEBUG
          std::getline(inF, extracted);
-         //std::cout << extracted << std::endl; //DEBUG
          inF.close();
          return pos;
       }
@@ -85,8 +83,6 @@ namespace FCrypt {
          std::string stripped[7], token, delim = "$";
          while ((index = toStrip.find(delim)) != std::string::npos) {
              stripped[i++] = toStrip.substr(0, index);
-             //stripped[i++] = token;
-             //std::cout << token << std::endl;
              toStrip.erase(0, index + delim.length());
          }
          std::string temp;
@@ -114,6 +110,19 @@ namespace FCrypt {
          decoder.Put((byte*)encoded.data(), encoded.size());
          decoder.MessageEnd();
          decoder.Get(barray, bsize);
+      }
+      /*
+      @brief Write over array containing key
+      
+      @param key byte array pointer to key
+      @param size size of key
+      */
+      void KeyOverwrite(byte* key, size_t size){
+         for(int i = 0; i<100; i++){
+            for(int j = 0; j<(int)size; j++){
+               key[j] = (unsigned char)FCrypt::AES::GenRand(0,127);
+            }
+         } 
       }
 
    }

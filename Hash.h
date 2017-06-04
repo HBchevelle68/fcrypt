@@ -34,7 +34,6 @@ namespace FCrypt {
 
       void GenSalt(std::string& pw_salt);
       void ByteToHexString(byte* b, std::string& salt);
-      bool VerifyPw(std::string& pwd, const std::string& user_hash, std::string& salt);
    }
 }
 
