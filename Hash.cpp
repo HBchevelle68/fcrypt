@@ -95,7 +95,8 @@ namespace FCrypt {
                new CryptoPP::HexEncoder(new CryptoPP::StringSink(output))));
       }
 
-      void FileHash(std::fstream & file, std::string & outputHash){
+      void FileHash(std::ifstream& file, std::string& outputHash){
+         
          CryptoPP::SHA256 sha_256;
          CryptoPP::FileSource(file, true, 
             new CryptoPP::HashFilter(sha_256, 

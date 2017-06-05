@@ -30,7 +30,7 @@ namespace FCrypt {
       void SHA_384(std::string& pwd, std::string& output, std::string& salt);
       void SHA_256(std::string& pwd, std::string& output, std::string& salt);
       void PKCS5_PBKDF2(std::string& pwd, std::string& salt, byte* key, size_t ksize, int pos, size_t iter = 1000);
-      void FileHash(std::fstream& file, std::string& outputHash);
+      void FileHash(std::ifstream& file, std::string& outputHash);
 
       void GenSalt(std::string& pw_salt);
       void ByteToHexString(byte* b, std::string& salt);
