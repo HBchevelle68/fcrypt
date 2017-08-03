@@ -1,5 +1,5 @@
 /*
-   @Author - Anthony Portante
+   @Author - HBchevelle68 (sunstriker)
 */
 #include "AES.h"
 
