@@ -1,5 +1,5 @@
 /*
-   @Author - Anthony Portante
+   @Author - HBchevelle68 (sunstriker)
 */
 #pragma once
 #ifndef AES_H
